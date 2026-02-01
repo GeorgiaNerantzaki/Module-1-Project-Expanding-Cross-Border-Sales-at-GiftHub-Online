@@ -25,57 +25,48 @@ print("Summary statistics: \n", dt.describe().round(2))
 
 
 #visualizations
-#barplot showing trnascactions per country (all countries)
-number_of_transcactions = dt['Country'].value_counts()
-country_barplot = plt.bar(number_of_transcactions.index, number_of_transcactions.values)
-plt.title('Barplot of transcactions per country (all countries)')
-plt.xticks(rotation = 90)
-plt.show()
 
 #barplot showing trnascactions per country (for countries: Germany, France, Norway, Netherlands, Ireland)
-countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'Ireland']
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+plt.figure(figsize = (18,7))
 filtered_dt = dt[dt['Country'].isin(countries)]
 number_of_transcactions = filtered_dt['Country'].value_counts()
 country_barplot = plt.bar(number_of_transcactions.index, number_of_transcactions.values)
-plt.title('Barplot of transcactions per country (Germany, France, Norway, Netherlands, Ireland) ')
+plt.title('Barplot of transcactions per country (Germany, France, Norway, Netherlands, EIRE) ')
 plt.xticks(rotation = 90)
 plt.show()
 
-
-#barplot showing number of unique customers per country (all countries)
-number_of_unique_customers_per_country = dt.groupby('Country')['CustomerID'].nunique()
-country_barplot = plt.bar(number_of_unique_customers_per_country.index, number_of_unique_customers_per_country.values)
-plt.title('Barplot of number of unique customers per country (all countries)')
-plt.xticks(rotation = 90)
-plt.show()
 
 #barplot showing number of unique customers per country (Germany, France, Norway, Netherlands, Ireland)
-countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'Ireland']
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+plt.figure(figsize = (18,7))
 filtered_dt = dt[dt['Country'].isin(countries)]
 number_of_unique_customers = filtered_dt.groupby('Country')['CustomerID'].nunique()
 country_barplot = plt.bar(number_of_unique_customers.index, number_of_unique_customers.values)
-plt.title('Barplot of number of unique customers per country (Germany, France, Norway, Netherlands, Ireland)')
+plt.title('Barplot of number of unique customers per country (Germany, France, Norway, Netherlands, EIRE)')
 plt.xticks(rotation = 90)
 plt.show()
 
 
 #barplot showing average quantity per country (Germany, France, Norway, Netherlands, Ireland)
-countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'Ireland']
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+plt.figure(figsize = (18,7))
 filtered_dt = dt[dt['Country'].isin(countries)]
 average_quantity_per_country = filtered_dt.groupby('Country')['Quantity'].mean()
 country_barplot = plt.bar(average_quantity_per_country.index, average_quantity_per_country.values)
-plt.title('Barplot of average quantity per country (Germany, France, Norway, Netherlands, Ireland)')
+plt.title('Barplot of average quantity per country (Germany, France, Norway, Netherlands, EIRE)')
 plt.xticks(rotation = 90)
 plt.show()
 
 
 
 #barplot showing average unit price per country (Germany, France, Norway, Netherlands, Ireland)
-countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'Ireland']
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+plt.figure(figsize = (18,7))
 filtered_dt = dt[dt['Country'].isin(countries)]
 average_unit_price_per_country = filtered_dt.groupby('Country')['UnitPrice'].mean()
 country_barplot = plt.bar(average_unit_price_per_country.index, average_unit_price_per_country.values)
-plt.title('Barplot of average unit price per country (Germany, France, Norway, Netherlands, Ireland)')
+plt.title('Barplot of average unit price per country (Germany, France, Norway, Netherlands, EIRE)')
 plt.xticks(rotation = 90)
 plt.show()
 
