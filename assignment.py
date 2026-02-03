@@ -71,4 +71,12 @@ plt.xticks(rotation = 90)
 plt.show()
 
 
+#boxplot showing unit price per country (Germany, France, Norway, Netherlands, Ireland)
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+plt.figure(figsize = (18,7))
+filtered_dt = dt[dt['Country'].isin(countries)]
+sns.boxplot(x='Country', y='UnitPrice', data=filtered_dt)
+plt.title('Boxplot of unit price per country (Germany, France, Norway, Netherlands, EIRE)')
+plt.xticks(rotation = 90)
+plt.show()
 
