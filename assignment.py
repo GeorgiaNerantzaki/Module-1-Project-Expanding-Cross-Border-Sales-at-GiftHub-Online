@@ -80,3 +80,15 @@ plt.title('Boxplot of unit price per country (Germany, France, Norway, Netherlan
 plt.xticks(rotation = 90)
 plt.show()
 
+#PHASE 3
+#subplots showing quantity accross time per country (Germany, France, Norway, Netherlands, Ireland)
+fig, axes = plt.subplots(nrows=5, ncols=1, sharex=True, figsize = (18,20))
+for ax,country in zip(axes, countries):
+    country_dt = dt[dt['Country']== country]
+    ts = dt.groupby('Country')['Quantity'].sum()
+    time_series_plot = plt.plt(ts.index, ts.values)
+
+plt.show()
+
+
+
