@@ -82,13 +82,54 @@ plt.show()
 
 #PHASE 3
 #subplots showing quantity accross time per country (Germany, France, Norway, Netherlands, Ireland)
+dt['InvoiceDate']= pd.to_datetime(dt['InvoiceDate']).dt.normalize()
+all_dates = pd.date_range(start = dt['InvoiceDate'].min(),end = dt['InvoiceDate'].max(), freq= 'D' )
 fig, axes = plt.subplots(nrows=5, ncols=1, sharex=True, figsize = (18,20))
+fig.suptitle('Cancellations across tie by Country (Germany, France, Norway, Netherlands, Ireland)', fontsize=16)
 for ax,country in zip(axes, countries):
-    country_dt = dt[dt['Country']== country]
-    ts = dt.groupby('Country')['Quantity'].sum()
-    time_series_plot = plt.plt(ts.index, ts.values)
+    country_dt = dt[dt['Country'] == country]
+    ts = country_dt.groupby('InvoiceDate')['Quantity'].sum().reindex(all_dates, fill_value=0)
+    time_series_plot = ax.plot(ts.index, ts.values)
+    ax.set_ylabel('Cancellations')
+    ax.set_title(country)
+plt.show()
 
+#heatmap showing sales by country and category (using Description as category)
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+dt['Sales'] = dt['Quantity'] * dt['UnitPrice']
+filtered_dt = dt[dt['Country'].isin(countries)]
+top_categories = filtered_dt.groupby('Description')['Sales'].sum().nlargest(10).index
+heatmap_data = filtered_dt[filtered_dt['Description'].isin(top_categories)]
+plt.figure(figsize = (18,7))
+pivot_table = heatmap_data.pivot_table(values='Sales', index='Description', columns='Country', aggfunc='sum', fill_value=0)
+sns.heatmap(pivot_table, annot=True, fmt=".1f", cmap="YlGnBu")
+plt.title('Heatmap of Sales by Country and Category (Top 10 Products)')
 plt.show()
 
 
+#scatter plot for cancellation frequency by country
+countries  = ['Germany', 'France', 'Norway', 'Netherlands', 'EIRE']
+filtered_dt = dt[dt['Country'].isin(countries)].copy()
+filtered_dt['Sales'] = filtered_dt['Quantity'] * filtered_dt['UnitPrice']
+filtered_dt['InvoiceNo'] = filtered_dt['InvoiceNo'].astype(str)
 
+stats = filtered_dt.groupby('Country').agg(
+    TotalRevenue=('Sales', 'sum'),
+    TotalInvoices=('InvoiceNo', 'nunique'),
+    CancelledInvoices=('InvoiceNo', lambda x: x[x.str.startswith('C')].nunique()),
+    SuccessfulInvoices=('InvoiceNo', lambda x: x[~x.str.startswith('C')].nunique())
+).reset_index()
+stats['CancellationRate'] = stats['CancelledInvoices'] / stats['TotalInvoices']
+
+plt.figure(figsize = (18,7))
+sizes = (stats['TotalRevenue'] / stats['TotalRevenue'].max()) * 2000 + 100
+plt.scatter(stats['SuccessfulInvoices'], stats['CancellationRate'], s=sizes, color='purple', alpha=0.6)
+for i, row in stats.iterrows():
+    plt.text(row['SuccessfulInvoices'], row['CancellationRate'], row['Country'], fontsize=12)
+plt.axvline(x=stats['SuccessfulInvoices'].mean(), color='blue', linestyle='--', label='Avg Order Volume')
+plt.axhline(y=stats['CancellationRate'].mean(), color='red', linestyle='--', label='Avg Cancellation Rate')
+plt.title('Scatter plot of cancellation frequency vs order volume (Size = Revenue)')
+plt.xlabel('Total unique successful InvoiceNo')
+plt.ylabel('% of InvoiceNo starting with \'C\'')
+plt.legend()
+plt.show()
