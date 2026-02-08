@@ -133,3 +133,44 @@ plt.xlabel('Total unique successful InvoiceNo')
 plt.ylabel('% of InvoiceNo starting with \'C\'')
 plt.legend()
 plt.show()
+
+
+#PHASE 4
+#feature engineering 
+#handling missing values 
+#drop rows with missing valuesin 'CustomerId' column
+dt.dropna(subset=['CustomerID'])
+#fill missing values in description column with 'No Value'
+dt['Description'].fillna(value='No value', inplace=True)
+print("Dataset after handling missing values: \n", dt)
+#converting InvoiceDate to datetime
+dt['InvoiceDate'] = pd.to_datetime(dt['InvoiceDate'])
+#converting InvoiceDate to datetime
+dt['InvoiceDate'] = pd.to_datetime(dt['InvoiceDate'])
+#converting CustomerID to int
+dt['CustomerID'] = dt['InvoiceDate'].astype(int)
+#create cancellation flag and column (variable)
+dt['Cancellation'] = (
+    (dt['Quantity'] < 0) |
+    (dt['InvoiceNo'].astype(str).str.startswith('C'))
+).astype(int)
+#create revenue per transcaction feature 
+dt['RevenuePerTransc'] = dt['UnitPrice']*dt['Quantity']
+print("Dataset with new features: \n", dt)
+#perform rfm analysis
+reference_date = dt['InvoiceDate'].max() + pd.Timedelta(days=1)
+rfm = (
+    dt[dt['Cancellation'] == 0]
+    .groupby('CustomerID')
+    .agg(
+        Recency=('InvoiceDate', lambda x: (reference_date - x.max()).days),
+        Frequency=('InvoiceNo', 'nunique'),
+        Monetary=('RevenuePerTransc', 'sum')
+    )
+    .reset_index()
+)
+
+print(rfm.head())
+
+
+
